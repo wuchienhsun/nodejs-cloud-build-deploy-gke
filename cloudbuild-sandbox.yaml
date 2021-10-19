@@ -1,0 +1,16 @@
+steps:
+  - name: "gcr.io/cloud-builders/docker"
+    args: ["build", "-t", "gcr.io/$PROJECT_ID/bento-api:$SHORT_SHA", "."]
+    waitFor: ['-']
+    id: 'build-image'
+  - name: gcr.io/cloud-builders/gcloud
+    args: ['container', 'clusters', 'get-credentials', 'ben-prod', '--region', 'asia-east1']
+    id: 'prepare-credentials'
+  - name: 'gcr.io/$PROJECT_ID/helm'
+    args: ['--namespace=default','upgrade','--install','node-api','node-api','-f','node-api/values.yaml','--set','image.tag=$SHORT_SHA' ]
+    env:
+    - 'CLOUDSDK_COMPUTE_ZONE=asia-east1'
+    - 'CLOUDSDK_CONTAINER_CLUSTER=ben-prod'
+    waitFor: ['build-image', 'prepare-credentials']
+tags: ['cloud-builders-community']
+images: ["gcr.io/$PROJECT_ID/node-api"]
