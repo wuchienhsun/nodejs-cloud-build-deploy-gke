@@ -1,6 +1,6 @@
 steps:
   - name: "gcr.io/cloud-builders/docker"
-    args: ["build", "-t", "gcr.io/$PROJECT_ID/bento-api:$SHORT_SHA", "."]
+    args: ["build", "-t", "gcr.io/$PROJECT_ID/node-api:$SHORT_SHA", "."]
     waitFor: ['-']
     id: 'build-image'
   - name: gcr.io/cloud-builders/gcloud
